@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from fastapi.routing import APIRoute
+from starlette.middleware.sessions import SessionMiddleware
 from contextlib import asynccontextmanager
 import os
 
@@ -21,6 +21,13 @@ app = FastAPI(
     description="API d'administration et supervision pour SpopoClaw",
     version="1.0.0",
     lifespan=lifespan
+)
+
+# Session middleware (required for OAuth)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.SECRET_KEY,
+    max_age=3600  # 1 hour
 )
 
 # CORS
