@@ -66,7 +66,7 @@ async def auth_callback(request: Request):
         jwt_token = create_jwt_token(email)
         
         # Redirect to frontend with token
-        frontend_url = "http://95.111.236.247:8000"
+        frontend_url = "http://spopoclaw.duckdns.org:8000"
         return RedirectResponse(url=f"{frontend_url}/auth/callback?token={jwt_token}")
         
     except Exception as e:

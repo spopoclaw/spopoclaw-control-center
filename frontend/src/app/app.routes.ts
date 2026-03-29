@@ -29,12 +29,32 @@ export const routes: Routes = [
         loadComponent: () => import('./components/system/system.component').then(m => m.SystemComponent)
       },
       {
+        path: 'services',
+        loadComponent: () => import('./components/under-construction/under-construction.component').then(m => m.UnderConstructionComponent),
+        data: { title: 'Services' }
+      },
+      {
+        path: 'containers',
+        loadComponent: () => import('./components/under-construction/under-construction.component').then(m => m.UnderConstructionComponent),
+        data: { title: 'Containers' }
+      },
+      {
         path: 'openclaw',
         loadComponent: () => import('./components/openclaw/openclaw.component').then(m => m.OpenclawComponent)
       },
       {
+        path: 'logs',
+        loadComponent: () => import('./components/under-construction/under-construction.component').then(m => m.UnderConstructionComponent),
+        data: { title: 'Logs' }
+      },
+      {
         path: 'audit',
         loadComponent: () => import('./components/audit/audit.component').then(m => m.AuditComponent)
+      },
+      {
+        path: 'access',
+        loadComponent: () => import('./components/under-construction/under-construction.component').then(m => m.UnderConstructionComponent),
+        data: { title: 'Contrôle d\'accès' }
       }
     ]
   },

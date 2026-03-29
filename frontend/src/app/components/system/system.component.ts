@@ -1,145 +1,147 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatChipsModule } from '@angular/material/chips';
 import { SystemService } from '../../services/system.service';
 import { DiskPartition, NetworkInterface, ProcessInfo, ServiceInfo } from '../../models';
 
 @Component({
   selector: 'app-system',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatIconModule, MatProgressBarModule, MatChipsModule],
+  imports: [CommonModule, MatIconModule, MatProgressBarModule],
   template: `
-    <div class="space-y-6">
-      <h2 class="text-2xl font-bold text-gray-800">Supervision Système</h2>
+    <div class="space-y-6 animate-fade-in">
+      <!-- Header -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Supervision Système</h2>
+          <p class="text-dark-400 mt-1">Métriques et ressources système</p>
+        </div>
+        <button class="btn-secondary gap-2" (click)="loadData()">
+          <mat-icon class="text-sm">refresh</mat-icon>
+          Rafraîchir
+        </button>
+      </div>
 
       <!-- Disk Usage -->
-      <mat-card class="p-6">
-        <h3 class="text-lg font-semibold mb-4 flex items-center">
-          <mat-icon class="mr-2">storage</mat-icon>
-          Disques
-        </h3>
-        <table mat-table [dataSource]="diskPartitions" class="w-full">
-          <ng-container matColumnDef="device">
-            <th mat-header-cell *matHeaderCellDef>Périphérique</th>
-            <td mat-cell *matCellDef="let partition">{{ partition.device }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="mountpoint">
-            <th mat-header-cell *matHeaderCellDef>Point de montage</th>
-            <td mat-cell *matCellDef="let partition">{{ partition.mountpoint }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="fstype">
-            <th mat-header-cell *matHeaderCellDef>Type</th>
-            <td mat-cell *matCellDef="let partition">{{ partition.fstype }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="usage">
-            <th mat-header-cell *matHeaderCellDef>Utilisation</th>
-            <td mat-cell *matCellDef="let partition">
-              <div class="flex items-center">
-                <span class="mr-2">{{ partition.percent }}%</span>
-                <mat-progress-bar 
-                  mode="determinate" 
-                  [value]="partition.percent"
-                  [color]="partition.percent > 90 ? 'warn' : 'primary'"
-                  class="w-24">
-                </mat-progress-bar>
-              </div>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="size">
-            <th mat-header-cell *matHeaderCellDef>Taille</th>
-            <td mat-cell *matCellDef="let partition">{{ partition.total }}</td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="diskColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: diskColumns;"></tr>
-        </table>
-      </mat-card>
-
-      <!-- Network Interfaces -->
-      <mat-card class="p-6">
-        <h3 class="text-lg font-semibold mb-4 flex items-center">
-          <mat-icon class="mr-2">network_check</mat-icon>
-          Interfaces réseau
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div *ngFor="let iface of networkInterfaces" class="border rounded-lg p-4">
-            <div class="flex items-center mb-2">
-              <mat-icon class="mr-2 text-primary-600">wifi</mat-icon>
-              <span class="font-semibold">{{ iface.name }}</span>
+      <div class="card">
+        <div class="card-header">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-primary-900/50 flex items-center justify-center">
+              <mat-icon class="text-primary-400">storage</mat-icon>
             </div>
-            <div class="text-sm space-y-1">
-              <div *ngFor="let addr of iface.addresses">
-                <span class="text-gray-500">{{ addr.family }}:</span> {{ addr.address }}
+            <div>
+              <h3 class="font-semibold text-white">Stockage</h3>
+              <p class="text-xs text-dark-400">Partitions et utilisation disque</p>
+            </div>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Périphérique</th>
+                <th>Point de montage</th>
+                <th>Type</th>
+                <th>Utilisation</th>
+                <th>Taille</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let partition of diskPartitions">
+                <td class="font-mono text-dark-300">{{ partition.device }}</td>
+                <td>{{ partition.mountpoint }}</td>
+                <td><span class="badge bg-dark-800 text-dark-300">{{ partition.fstype }}</span></td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <span class="text-dark-200 w-12">{{ partition.percent }}%</span>
+                    <div class="w-24 h-2 bg-dark-800 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full transition-all duration-500"
+                           [class.bg-success-DEFAULT]="partition.percent < 70"
+                           [class.bg-warning-DEFAULT]="partition.percent >= 70 && partition.percent < 90"
+                           [class.bg-danger-DEFAULT]="partition.percent >= 90"
+                           [style.width.%]="partition.percent"></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-dark-300">{{ partition.total }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Network & Services Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Network Interfaces -->
+        <div class="card">
+          <div class="card-header">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-primary-900/50 flex items-center justify-center">
+                <mat-icon class="text-primary-400">network_check</mat-icon>
               </div>
-              <div class="mt-2 pt-2 border-t text-xs text-gray-500">
-                <span>RX: {{ formatBytes(iface.bytes_recv) }}</span>
-                <span class="mx-2">|</span>
-                <span>TX: {{ formatBytes(iface.bytes_sent) }}</span>
+              <div>
+                <h3 class="font-semibold text-white">Réseau</h3>
+                <p class="text-xs text-dark-400">Interfaces et statistiques</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-body space-y-4 max-h-96 overflow-y-auto">
+            <div *ngFor="let iface of networkInterfaces" class="p-4 rounded-lg bg-dark-800/30 border border-dark-800">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <mat-icon class="text-primary-400">wifi</mat-icon>
+                  <span class="font-semibold text-white">{{ iface.name }}</span>
+                </div>
+              </div>
+              <div class="space-y-1 text-sm">
+                <div *ngFor="let addr of iface.addresses" class="flex justify-between">
+                  <span class="text-dark-500">{{ addr.family }}:</span>
+                  <span class="text-dark-300 font-mono">{{ addr.address }}</span>
+                </div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-dark-800 flex justify-between text-xs">
+                <span class="text-success-DEFAULT">↓ {{ formatBytes(iface.bytes_recv) }}</span>
+                <span class="text-primary-400">↑ {{ formatBytes(iface.bytes_sent) }}</span>
               </div>
             </div>
           </div>
         </div>
-      </mat-card>
 
-      <!-- Services -->
-      <mat-card class="p-6">
-        <h3 class="text-lg font-semibold mb-4 flex items-center">
-          <mat-icon class="mr-2">miscellaneous_services</mat-icon>
-          Services
-        </h3>
-        <div class="flex flex-wrap gap-2">
-          <div *ngFor="let service of services" 
-               class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-               [class.bg-green-100]="service.status === 'running'"
-               [class.text-green-800]="service.status === 'running'"
-               [class.bg-red-100]="service.status !== 'running'"
-               [class.text-red-800]="service.status !== 'running'">
-            <mat-icon class="mr-1 text-sm" *ngIf="service.status === 'running'">check_circle</mat-icon>
-            <mat-icon class="mr-1 text-sm" *ngIf="service.status !== 'running'">error</mat-icon>
-            {{ service.name }}
+        <!-- Services -->
+        <div class="card">
+          <div class="card-header">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-primary-900/50 flex items-center justify-center">
+                <mat-icon class="text-primary-400">miscellaneous_services</mat-icon>
+              </div>
+              <div>
+                <h3 class="font-semibold text-white">Services</h3>
+                <p class="text-xs text-dark-400">État des services système</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-cols-2 gap-3">
+              <div *ngFor="let service of services" 
+                   class="flex items-center gap-3 p-3 rounded-lg border"
+                   [style.background-color]="service.status === 'running' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'"
+                   [style.border-color]="service.status === 'running' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'">
+                <div class="w-2 h-2 rounded-full"
+                     [class.bg-success-DEFAULT]="service.status === 'running'"
+                     [class.bg-danger-DEFAULT]="service.status !== 'running'"
+                     [class.animate-pulse]="service.status === 'running'"></div>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-white">{{ service.name }}</p>
+                  <p class="text-xs" [class.text-success-light]="service.status === 'running'" [class.text-danger-light]="service.status !== 'running'">
+                    {{ service.status === 'running' ? 'En cours' : 'Arrêté' }}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </mat-card>
-
-      <!-- Top Processes -->
-      <mat-card class="p-6">
-        <h3 class="text-lg font-semibold mb-4 flex items-center">
-          <mat-icon class="mr-2">view_list</mat-icon>
-          Processus actifs (Top CPU)
-        </h3>
-        <table mat-table [dataSource]="processes" class="w-full">
-          <ng-container matColumnDef="pid">
-            <th mat-header-cell *matHeaderCellDef>PID</th>
-            <td mat-cell *matCellDef="let proc">{{ proc.pid }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Nom</th>
-            <td mat-cell *matCellDef="let proc">{{ proc.name }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="cpu">
-            <th mat-header-cell *matHeaderCellDef>CPU %</th>
-            <td mat-cell *matCellDef="let proc">{{ proc.cpu_percent | number:'1.1-1' }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="memory">
-            <th mat-header-cell *matHeaderCellDef>Mémoire %</th>
-            <td mat-cell *matCellDef="let proc">{{ proc.memory_percent | number:'1.1-1' }}</td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="processColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: processColumns;"></tr>
-        </table>
-      </mat-card>
+      </div>
     </div>
   `
 })
@@ -147,10 +149,6 @@ export class SystemComponent implements OnInit {
   diskPartitions: DiskPartition[] = [];
   networkInterfaces: NetworkInterface[] = [];
   services: ServiceInfo[] = [];
-  processes: ProcessInfo[] = [];
-
-  diskColumns = ['device', 'mountpoint', 'fstype', 'usage', 'size'];
-  processColumns = ['pid', 'name', 'cpu', 'memory'];
 
   constructor(private systemService: SystemService) {}
 
@@ -162,7 +160,6 @@ export class SystemComponent implements OnInit {
     this.systemService.getDiskInfo().subscribe(data => this.diskPartitions = data.partitions);
     this.systemService.getNetworkInfo().subscribe(data => this.networkInterfaces = data.interfaces);
     this.systemService.getServices().subscribe(data => this.services = data.services);
-    this.systemService.getProcesses(15).subscribe(data => this.processes = data.processes);
   }
 
   formatBytes(bytes: number): string {

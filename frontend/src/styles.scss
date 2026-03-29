@@ -1,12 +1,172 @@
+/* Global styles for SpopoClaw Control Center */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles */
-html, body {
-  height: 100%;
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  
+  body {
+    @apply bg-dark-950 text-dark-100 font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-900;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-dark-700 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-dark-600;
+  }
 }
 
-body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+@layer components {
+  /* Card styles */
+  .card {
+    @apply bg-dark-900/80 backdrop-blur-sm border border-dark-800 rounded-xl;
+    @apply hover:border-dark-700 transition-all duration-300;
+  }
+  
+  .card-header {
+    @apply px-6 py-4 border-b border-dark-800 flex items-center justify-between;
+  }
+  
+  .card-body {
+    @apply p-6;
+  }
+  
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-950;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-500 focus:ring-primary-500;
+    @apply shadow-lg shadow-primary-900/20;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-dark-800 text-dark-100 hover:bg-dark-700 focus:ring-dark-600;
+    @apply border border-dark-700;
+  }
+  
+  .btn-danger {
+    @apply btn bg-danger-DEFAULT text-white hover:bg-danger-dark focus:ring-danger-DEFAULT;
+  }
+  
+  /* Status badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-success {
+    @apply badge text-green-300 border;
+    background-color: rgba(21, 128, 61, 0.3);
+    border-color: rgba(34, 197, 94, 0.3);
+  }
+  
+  .badge-warning {
+    @apply badge text-amber-300 border;
+    background-color: rgba(180, 83, 9, 0.3);
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+  
+  .badge-danger {
+    @apply badge text-red-300 border;
+    background-color: rgba(185, 28, 28, 0.3);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+  
+  .badge-info {
+    @apply badge text-blue-300 border;
+    background-color: rgba(29, 78, 216, 0.3);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+  
+  /* Metric cards */
+  .metric-card {
+    @apply card p-6 relative overflow-hidden;
+  }
+  
+  .metric-value {
+    @apply text-3xl font-bold text-white tracking-tight;
+  }
+  
+  .metric-label {
+    @apply text-sm font-medium text-dark-400 mt-1;
+  }
+  
+  .metric-change {
+    @apply inline-flex items-center text-sm font-medium mt-2;
+  }
+  
+  /* Navigation */
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-dark-400 transition-all duration-200;
+    @apply hover:bg-dark-800 hover:text-dark-100;
+  }
+  
+  .nav-link.active {
+    @apply bg-primary-600/10 text-primary-400 border border-primary-600/20;
+  }
+  
+  /* Tables */
+  .data-table {
+    @apply w-full text-left border-collapse;
+  }
+  
+  .data-table th {
+    @apply px-4 py-3 text-xs font-semibold text-dark-400 uppercase tracking-wider border-b border-dark-800;
+  }
+  
+  .data-table td {
+    @apply px-4 py-3 text-sm text-dark-200 border-b border-dark-800/50;
+  }
+  
+  .data-table tr:hover td {
+    @apply bg-dark-800/50;
+  }
+  
+  /* Code blocks */
+  .code-block {
+    @apply bg-dark-950 border border-dark-800 rounded-lg p-4 font-mono text-sm;
+    @apply overflow-x-auto;
+  }
+  
+  /* Glow effects */
+  .glow-primary {
+    @apply shadow-glow;
+  }
+  
+  .glow-success {
+    @apply shadow-glow-success;
+  }
+  
+  .glow-danger {
+    @apply shadow-glow-danger;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-primary-600;
+  }
+  
+  .bg-glass {
+    @apply bg-dark-900/60 backdrop-blur-md border border-dark-800/50;
+  }
 }

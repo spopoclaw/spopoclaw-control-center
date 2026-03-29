@@ -21,8 +21,14 @@ class Settings(BaseSettings):
     # Allowed Users (comma-separated emails)
     ALLOWED_USERS: str = "youssef.mahtat.as.developer@gmail.com,spopoclaw@gmail.com"
     
-    # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:4200", "http://localhost:8080", "http://localhost:80", "http://95.111.236.247:8000"]
+    # CORS - Updated for DuckDNS domain
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:4200",
+        "http://localhost:8080",
+        "http://localhost:80",
+        "http://95.111.236.247:8000",
+        "http://spopoclaw.duckdns.org:8000"
+    ]
     
     # OpenClaw
     OPENCLAW_GATEWAY_URL: str = "http://localhost:18789"
