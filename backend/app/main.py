@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.routing import APIRoute
 from contextlib import asynccontextmanager
 import os
 
@@ -44,8 +45,25 @@ frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", 
 if os.path.exists(frontend_path):
     print(f"📁 Serving frontend from: {frontend_path}")
     
-    # Serve static files from root - html=True means serve index.html for directories
-    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+    # List of static file extensions to serve directly
+    static_extensions = ('.js', '.css', '.ico', '.png', '.jpg', '.jpeg', '.svg', '.woff', '.woff2', '.ttf', '.eot')
+    
+    @app.get("/{path:path}")
+    async def serve_spa(path: str = ""):
+        # Don't intercept API routes
+        if path.startswith("api/"):
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="Not found")
+        
+        # If requesting a static file, serve it directly
+        if path and path.endswith(static_extensions):
+            file_path = os.path.join(frontend_path, path)
+            if os.path.exists(file_path) and os.path.isfile(file_path):
+                return FileResponse(file_path)
+        
+        # For all other routes, serve index.html (SPA behavior)
+        index_path = os.path.join(frontend_path, "index.html")
+        return FileResponse(index_path, media_type="text/html")
     
 else:
     print(f"⚠️ Frontend not found at: {frontend_path}")
