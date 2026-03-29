@@ -6,7 +6,7 @@ import httpx
 import jwt
 from datetime import datetime, timedelta
 
-from app.config import settings
+from app.config import settings, ALLOWED_USERS_LIST
 
 router = APIRouter()
 
@@ -56,7 +56,7 @@ async def auth_callback(request: Request):
         email = user_info.get('email')
         
         # Strict allowlist check
-        if email not in settings.ALLOWED_USERS:
+        if email not in ALLOWED_USERS_LIST:
             raise HTTPException(
                 status_code=403, 
                 detail=f"Access denied. Email {email} is not authorized."
@@ -66,8 +66,8 @@ async def auth_callback(request: Request):
         jwt_token = create_jwt_token(email)
         
         # Redirect to frontend with token
-        frontend_url = "http://localhost:4200/auth/callback"
-        return RedirectResponse(url=f"{frontend_url}?token={jwt_token}")
+        frontend_url = "http://95.111.236.247:8000"
+        return RedirectResponse(url=f"{frontend_url}/auth/callback?token={jwt_token}")
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Authentication failed: {str(e)}")
@@ -90,4 +90,4 @@ async def logout():
 @router.get("/allowed-users")
 async def get_allowed_users():
     """Public endpoint to see allowed users (for frontend)"""
-    return {"allowed_users": settings.ALLOWED_USERS}
+    return {"allowed_users": ALLOWED_USERS_LIST}

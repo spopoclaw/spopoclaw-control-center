@@ -96,15 +96,16 @@ import { DiskPartition, NetworkInterface, ProcessInfo, ServiceInfo } from '../..
           Services
         </h3>
         <div class="flex flex-wrap gap-2">
-          <mat-chip-listbox>
-            <mat-chip *ngFor="let service of services" 
-                      [color]="service.status === 'running' ? 'primary' : 'warn'"
-                      selected="{{ service.status === 'running' }}">
-              <mat-icon matChipAvatar *ngIf="service.status === 'running'">check_circle</mat-icon>
-              <mat-icon matChipAvatar *ngIf="service.status !== 'running'">error</mat-icon>
-              {{ service.name }}
-            </mat-chip>
-          </mat-chip-listbox>
+          <div *ngFor="let service of services" 
+               class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+               [class.bg-green-100]="service.status === 'running'"
+               [class.text-green-800]="service.status === 'running'"
+               [class.bg-red-100]="service.status !== 'running'"
+               [class.text-red-800]="service.status !== 'running'">
+            <mat-icon class="mr-1 text-sm" *ngIf="service.status === 'running'">check_circle</mat-icon>
+            <mat-icon class="mr-1 text-sm" *ngIf="service.status !== 'running'">error</mat-icon>
+            {{ service.name }}
+          </div>
         </div>
       </mat-card>
 

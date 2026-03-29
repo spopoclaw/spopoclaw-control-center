@@ -3,14 +3,13 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
 import { AuditService } from '../../services/openclaw.service';
 import { AuditEvent } from '../../models';
 
 @Component({
   selector: 'app-audit',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatIconModule, MatChipsModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatIconModule],
   template: `
     <div class="space-y-6">
       <h2 class="text-2xl font-bold text-gray-800">Journal d'audit</h2>
@@ -35,9 +34,17 @@ import { AuditEvent } from '../../models';
           <ng-container matColumnDef="type">
             <th mat-header-cell *matHeaderCellDef>Type</th>
             <td mat-cell *matCellDef="let event">
-              <mat-chip [color]="getEventColor(event.type)" selected>
+              <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
+                    [class.bg-blue-100]="event.type === 'system'"
+                    [class.text-blue-800]="event.type === 'system'"
+                    [class.bg-red-100]="event.type === 'error'"
+                    [class.text-red-800]="event.type === 'error'"
+                    [class.bg-purple-100]="event.type === 'auth'"
+                    [class.text-purple-800]="event.type === 'auth'"
+                    [class.bg-gray-100]="event.type !== 'system' && event.type !== 'error' && event.type !== 'auth'"
+                    [class.text-gray-800]="event.type !== 'system' && event.type !== 'error' && event.type !== 'auth'">
                 {{ event.type }}
-              </mat-chip>
+              </span>
             </td>
           </ng-container>
 
@@ -83,14 +90,5 @@ export class AuditComponent implements OnInit {
       this.events = data.events;
       this.totalEvents = data.total;
     });
-  }
-
-  getEventColor(type: string): string {
-    switch (type) {
-      case 'system': return 'primary';
-      case 'error': return 'warn';
-      case 'auth': return 'accent';
-      default: return '';
-    }
   }
 }

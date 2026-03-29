@@ -5,9 +5,8 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet],
-  template: `<router-outlet></router-outlet>`,
-  styleUrls: ['./app.scss']
+  template: '<router-outlet></router-outlet>',
 })
-export class AppComponent {
+export class App {
   title = 'SpopoClaw Control Center';
 }

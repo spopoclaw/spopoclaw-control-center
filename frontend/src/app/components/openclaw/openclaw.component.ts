@@ -16,7 +16,8 @@ import { OpenclawStatus } from '../../models';
       <h2 class="text-2xl font-bold text-gray-800">Supervision OpenClaw</h2>
 
       <!-- Status Card -->
-      <mat-card class="p-6" [class.border-l-4]="true" 
+      <mat-card class="p-6" 
+                [class.border-l-4]="true" 
                 [class.border-green-500]="openclawStatus?.status === 'online'"
                 [class.border-red-500]="openclawStatus?.status !== 'online'">
         <div class="flex items-center justify-between">
@@ -82,9 +83,10 @@ import { OpenclawStatus } from '../../models';
             Canaux configurés
           </h3>
           <div class="flex flex-wrap gap-2">
-            <mat-chip *ngFor="let channel of openclawInfo?.channels" color="primary" selected>
+            <div *ngFor="let channel of openclawInfo?.channels" 
+                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
               {{ channel }}
-            </mat-chip>
+            </div>
             <p *ngIf="!openclawInfo?.channels?.length" class="text-gray-500 italic">
               Aucun canal configuré
             </p>
